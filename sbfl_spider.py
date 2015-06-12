@@ -66,18 +66,28 @@ class OurSpider(object):
     def parse_items(self, tree=None):
         if tree:
             # 处理数据
+            h1 = tree.xpath('/html/body/div[3]/h1/text()')
             text = tree.xpath('/html/body/div[3]/div/text()')
+            parent_code = h1[0][:4]
+            print parent_code
             for txt in text:
                 if txt.strip():
                     items = txt.split(u'，')
                     for item in items:
                         item = item.strip()
-                        x = item.find(u'（')
-                        if x == 0:
-                            item = item[item.index(u'）')+1:]
-                        if item.find(u'注：') == 0:
-                            continue
-                        print item
+                        endswith = item[-6:]
+                        if endswith.isdigit():
+                            if item.find(u'（') == 0:
+                                item = item[item.index(u'）')+1:]
+
+                            if item[-7] == 'C':
+                                code = 'C'+endswith
+                                name = item[:-7]
+                            else:
+                                code = endswith
+                                name = item[:-6]
+                            # id, code, name, parent_code, created_at, updated_at
+                            print "value('"+code+"', '"+name+"', '"+parent_code+"'),"
                 else:
                     continue
 
